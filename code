@@ -1,0 +1,67 @@
+
+import tkinter as tk
+from tkinter import messagebox
+
+class QueueTrackerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Smart Hawker Queue Tracker")
+        self.root.geometry("400x400")
+        
+        self.stalls = {}  # Dictionary to store stall name and queue length
+
+        # Heading
+        tk.Label(root, text="Smart Hawker Queue Tracker", font=("Arial", 16, "bold")).pack(pady=10)
+
+        # Entry for stall name
+        self.stall_entry = tk.Entry(root, width=25)
+        self.stall_entry.pack(pady=5)
+        self.stall_entry.insert(0, "Enter stall name")
+
+        # Entry for queue length
+        self.queue_entry = tk.Entry(root, width=25)
+        self.queue_entry.pack(pady=5)
+        self.queue_entry.insert(0, "Enter queue length")
+
+        # Add/Update button
+        tk.Button(root, text="Add/Update Queue", command=self.add_update_stall).pack(pady=5)
+
+        # View stalls button
+        tk.Button(root, text="View All Stalls", command=self.view_stalls).pack(pady=5)
+
+        # Suggest best stall
+        tk.Button(root, text="Suggest Shortest Queue", command=self.suggest_stall).pack(pady=5)
+
+        # Output area
+        self.output = tk.Text(root, height=10, width=45)
+        self.output.pack(pady=10)
+
+    def add_update_stall(self):
+        name = self.stall_entry.get().strip()
+        try:
+            queue = int(self.queue_entry.get().strip())
+            self.stalls[name] = queue
+            messagebox.showinfo("Success", f"Updated {name} with queue {queue}")
+        except ValueError:
+            messagebox.showerror("Error", "Please enter a valid number for queue length.")
+
+    def view_stalls(self):
+        self.output.delete("1.0", tk.END)
+        if not self.stalls:
+            self.output.insert(tk.END, "No stalls added yet.")
+
+        else:
+            for stall, queue in self.stalls.items():
+                self.output.insert(tk.END, f"{stall}: {queue} people")
+
+    def suggest_stall(self):
+        if not self.stalls:
+            messagebox.showinfo("Info", "No stall data available.")
+            return
+        best_stall = min(self.stalls, key=self.stalls.get)
+        messagebox.showinfo("Suggestion", f"Try {best_stall}, only {self.stalls[best_stall]} people in line!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = QueueTrackerApp(root)
+    root.mainloop()
